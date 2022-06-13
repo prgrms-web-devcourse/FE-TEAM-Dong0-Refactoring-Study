@@ -26,17 +26,19 @@ export default function createStatementData(invoice, plays) {
     return data.performances.reduce((total, p) => total + p.volumeCredits, 0)
   }
 
-  function volumeCreditsFor(aPerformance) {
-    return new PerformanceCalculator(aPerformance, playFor(aPerformance))
-      .volumeCredits
-  }
-
   function playFor(aPerformance) {
     return plays[aPerformance.playID]
   }
+}
 
-  function amountFor(aPerformance) {
-    return new PerformanceCalculator(aPerformance, playFor(aPerformance)).amount
+function createPerformanceCalculator(aPerformance, aPlay) {
+  switch (aPlay.type) {
+    case 'tragedy':
+      return new TragedyCalculator(aPerformance, aPlay)
+    case 'comedy':
+      return new ComedyCalculator(aPerformance, aPlay)
+    default:
+      throw new Error(`알 수 없는 장르: ${aPlay.type}`)
   }
 }
 
@@ -60,17 +62,6 @@ class PerformanceCalculator {
     }
 
     return result
-  }
-}
-
-function createPerformanceCalculator(aPerformance, aPlay) {
-  switch (aPlay.type) {
-    case 'tragedy':
-      return new TragedyCalculator(aPerformance, aPlay)
-    case 'comedy':
-      return new ComedyCalculator(aPerformance, aPlay)
-    default:
-      throw new Error(`알 수 없는 장르: ${aPlay.type}`)
   }
 }
 
